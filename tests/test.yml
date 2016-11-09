@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  remote_user: root
+  roles:
+    - /Users/carlosfrias/apigee-workspace/opdk-workspace/apigee-opdk-setup-postgresql-remove
