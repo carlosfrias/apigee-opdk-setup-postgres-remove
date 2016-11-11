@@ -3,6 +3,7 @@
 - name: Construct uuid for master,standby
   set_fact:
     master_standby_uuid: "{{ hostvars[groups[pgmaster_group_name][0]].edge_ps_self.uUID }},{{ hostvars[groups[pgstandby_group_name][0]].edge_ps_self.uUID }}"
+  when: master_standby_uuid is not defined
 
 - name: Remove postgres to consumer groups
   uri:
