@@ -1,6 +1,9 @@
 ---
 - hosts: pgstandby
   gather_facts: no
+  vars_files:
+  - ~/.apigee/apigee-opdk-custom-properties/custom-properties.yml
+  - ~/.apigee-secure/credentials.yml
   tasks:
   - name: Collect attributes
     include_role:
