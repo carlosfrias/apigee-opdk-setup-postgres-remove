@@ -1,16 +1,42 @@
 ---
 # tasks file for /Users/carlosfrias/apigee-workspace/opdk-workspace/apigee-opdk-setup-postgresql-remove
-- name: Construct uuid for master,standby
-  set_fact:
-    master_standby_uuid: "{{ hostvars[groups[pgmaster_group_name][0]].edge_ps_self.uUID }},{{ hostvars[groups[pgstandby_group_name][0]].edge_ps_self.uUID }}"
-  when: master_standby_uuid is not defined
+#- name: Construct uuid for master,standby
+#  set_fact:
+#    master_standby_uuid: "{{ hostvars[groups[pgmaster_group_name][0]].edge_ps_self.uUID }},{{ hostvars[groups[pgstandby_group_name][0]].edge_ps_self.uUID }}"
+#  when: master_standby_uuid is not defined
+#
+#- name: Remove postgres to consumer groups
+#  uri:
+#    user: '{{ opdk_user_email }}'
+#    password: '{{ opdk_user_pass }}'
+#    method: DELETE
+#    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
+#    body_format: json
+#
+#- name: Remove postgres server
+#  uri:
+#    user: '{{ opdk_user_email }}'
+#    password: '{{ opdk_user_pass }}'
+#    method: DELETE
+#    body_format: json
+#    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid}}&type={{ hostvars[groups[pgmaster_group_name][0]].edge_ps_self.type[0] }}
+
+- name: Assert that attributes are available.
+  assert:
+    that:
+      - "ax_group is defined and ax_group | trim | length > 0"
+      - "consumer_group is defined and consumer_group | trim | length > 0"
+      - "server_type is defined and server_type | trim | length > 0"
+      - "uuid is defined and uuid | trim | length > 0"
+    msg: "Please provide the missing attribute"
+
 
 - name: Remove postgres to consumer groups
   uri:
     user: '{{ opdk_user_email }}'
     password: '{{ opdk_user_pass }}'
     method: DELETE
-    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
+    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ uuid }}
     body_format: json
 
 - name: Remove postgres server
@@ -19,5 +45,5 @@
     password: '{{ opdk_user_pass }}'
     method: DELETE
     body_format: json
-    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid}}&type={{ hostvars[groups[pgmaster_group_name][0]].edge_ps_self.type[0] }}
+    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ uuid }}&type={{ server_type }}
 
