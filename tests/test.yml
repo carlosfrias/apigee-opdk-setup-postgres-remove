@@ -11,3 +11,9 @@
   - name: Remove Postgres
     include_role:
       name: apigee-opdk-setup-postgresql-remove
+    var:
+      ax_group: 'axgroup001'
+      consumer_group: 'consumer-group-001'
+      server_type: 'postgres-server'
+      uuid: '{{ edge_ps_self.uUID }}'
+
