@@ -10,7 +10,7 @@
 
   - name: Remove Postgres
     include_role:
-      name: apigee-opdk-setup-postgresql-remove
+      name: apigee-opdk-setup-postgres-remove
     vars:
       ax_group: 'axgroup001'
       consumer_group: 'consumer-group-001'
