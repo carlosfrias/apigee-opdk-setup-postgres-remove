@@ -19,26 +19,30 @@
       - "standby_uuid is defined and uuid | trim | length > 0"
     msg: "Please provide the missing attribute"
 
+- name: Capture uuid for master
+  set_fact:
+    cacheable: yes
+    master_standby_uuid: "{{ master_uuid }}"
+
 - name: Construct uuid for master,standby
   set_fact:
+    cacheable: yes
     master_standby_uuid: "{{ master_uuid }},{{ standby_uuid }}"
-  when: master_standby_uuid is not defined
+  when: standby_uuid is defined
 
 - name: Remove postgres to consumer groups
   uri:
+    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
+    method: DELETE
     user: '{{ opdk_user_email }}'
     password: '{{ opdk_user_pass }}'
-    method: DELETE
-    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
-    body_format: json
 
 - name: Remove postgres server
   uri:
+    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid }}&type={{ server_type }}
+    method: DELETE
     user: '{{ opdk_user_email }}'
     password: '{{ opdk_user_pass }}'
-    method: DELETE
-    body_format: json
-    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid }}&type={{ server_type }}
 
 #- name: Remove postgres to consumer groups
 #  uri:
