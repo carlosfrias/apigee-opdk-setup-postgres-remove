@@ -36,6 +36,7 @@
     method: DELETE
     user: '{{ opdk_user_email }}'
     password: '{{ opdk_user_pass }}'
+  delegate_to: "{{ local_mgmt_ip | default(ansible_default_ipv4.address) }}"
 
 - name: Remove postgres server
   uri:
@@ -43,6 +44,7 @@
     method: DELETE
     user: '{{ opdk_user_email }}'
     password: '{{ opdk_user_pass }}'
+  delegate_to: "{{ local_mgmt_ip | default(ansible_default_ipv4.address) }}"
 
 #- name: Remove postgres to consumer groups
 #  uri:
