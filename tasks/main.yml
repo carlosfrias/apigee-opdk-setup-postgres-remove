@@ -30,21 +30,41 @@
     master_standby_uuid: "{{ master_uuid }},{{ standby_uuid }}"
   when: standby_uuid is defined
 
-- name: Remove postgres to consumer groups
-  uri:
-    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
-    method: DELETE
-    user: '{{ opdk_user_email }}'
-    password: '{{ opdk_user_pass }}'
-  delegate_to: "{{ local_mgmt_ip | default(ansible_default_ipv4.address) }}"
+- block:
+  - name: Remove postgres to consumer groups
+    uri:
+      url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
+      method: DELETE
+      user: '{{ opdk_user_email }}'
+      password: '{{ opdk_user_pass }}'
 
-- name: Remove postgres server
-  uri:
-    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid }}&type={{ server_type }}
-    method: DELETE
-    user: '{{ opdk_user_email }}'
-    password: '{{ opdk_user_pass }}'
-  delegate_to: "{{ local_mgmt_ip | default(ansible_default_ipv4.address) }}"
+  rescue:
+
+    - name: Remove postgres to consumer groups
+    uri:
+      url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
+      method: DELETE
+      user: '{{ opdk_user_email }}'
+      password: '{{ opdk_user_pass }}'
+    delegate_to: "{{ local_mgmt_ip | default(ansible_default_ipv4.address) }}"
+
+- block:
+  - name: Remove postgres server
+    uri:
+      url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid }}&type={{ server_type }}
+      method: DELETE
+      user: '{{ opdk_user_email }}'
+      password: '{{ opdk_user_pass }}'
+
+  rescue:
+    - name: Remove postgres server
+      uri:
+        url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid }}&type={{ server_type }}
+        method: DELETE
+        user: '{{ opdk_user_email }}'
+        password: '{{ opdk_user_pass }}'
+      delegate_to: "{{ local_mgmt_ip | default(ansible_default_ipv4.address) }}"
+
 
 #- name: Remove postgres to consumer groups
 #  uri:
