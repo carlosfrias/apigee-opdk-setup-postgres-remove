@@ -40,9 +40,9 @@
 
   rescue:
 
-    - name: Remove postgres to consumer groups
+    - name: Recover from attempt to remove postgres to consumer groups
     uri:
-      url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
+      url: http://127.0.0.1:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ master_standby_uuid }}
       method: DELETE
       user: '{{ opdk_user_email }}'
       password: '{{ opdk_user_pass }}'
@@ -57,28 +57,11 @@
       password: '{{ opdk_user_pass }}'
 
   rescue:
-    - name: Remove postgres server
+    - name: Recover from attempt to remove postgres server
       uri:
-        url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid }}&type={{ server_type }}
+        url: http://127.0.0.1:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ master_standby_uuid }}&type={{ server_type }}
         method: DELETE
         user: '{{ opdk_user_email }}'
         password: '{{ opdk_user_pass }}'
       delegate_to: "{{ local_mgmt_ip | default(ansible_default_ipv4.address) }}"
-
-
-#- name: Remove postgres to consumer groups
-#  uri:
-#    user: '{{ opdk_user_email }}'
-#    password: '{{ opdk_user_pass }}'
-#    method: DELETE
-#    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/consumer-groups/{{ consumer_group }}/datastores/{{ uuid }}
-#    body_format: json
-
-#- name: Remove postgres server
-#  uri:
-#    user: '{{ opdk_user_email }}'
-#    password: '{{ opdk_user_pass }}'
-#    method: DELETE
-#    body_format: json
-#    url: http://{{ local_mgmt_ip }}:8080/v1/analytics/groups/ax/{{ ax_group }}/servers?uuid={{ uuid }}&type={{ server_type }}
 
